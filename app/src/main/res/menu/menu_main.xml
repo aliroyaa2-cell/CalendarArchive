@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_source_calendars"
+        android:title="@string/menu_source_calendars" />
+    <item
+        android:id="@+id/action_sync_now"
+        android:title="@string/menu_sync_now" />
+</menu>

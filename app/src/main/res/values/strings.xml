@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">CalendarArchive</string>
+
+    <!-- Titles -->
+    <string name="title_main">أرشيف التقويم</string>
+    <string name="title_source_calendars">إدارة المصادر</string>
+
+    <!-- Tabs -->
+    <string name="tab_upcoming">📅  القادمة</string>
+    <string name="tab_past">🕐  السابقة</string>
+
+    <!-- Search -->
+    <string name="search_hint">ابحث في الأحداث (عنوان أو وصف)...</string>
+
+    <!-- Menu -->
+    <string name="menu_source_calendars">إدارة المصادر</string>
+    <string name="menu_sync_now">مزامنة الآن</string>
+    <string name="btn_menu_desc">القائمة</string>
+
+    <!-- Empty states -->
+    <string name="empty_events">لا توجد أحداث</string>
+    <string name="empty_events_hint">اضغط ⋮ → "إدارة المصادر" لاختيار التقاويم</string>
+    <string name="empty_search">لا توجد نتائج للبحث</string>
+
+    <!-- Permissions -->
+    <string name="perm_calendar_needed">يحتاج التطبيق صلاحية قراءة التقويم</string>
+    <string name="perm_grant">السماح</string>
+    <string name="perm_open_settings">فتح الإعدادات</string>
+
+    <!-- Source Calendars -->
+    <string name="source_header_hint">اختر التقاويم اللي تريد استيراد أحداثها</string>
+    <string name="source_no_calendars">لا توجد تقاويم على الجهاز</string>
+    <string name="source_no_calendars_hint">تأكد من إضافة حساب Google أو Samsung وتفعيل مزامنة التقويم</string>
+    <string name="source_btn_save">حفظ</string>
+    <string name="source_disable_warning">عند إيقاف تقويم → الأحداث منه تُحذف من التطبيق (تبقى في Google Calendar)</string>
+
+    <!-- Sync -->
+    <string name="sync_started">بدأت المزامنة…</string>
+    <string name="sync_first_time">أول مزامنة قد تأخذ بضع دقائق (نقرأ أرشيف 25+ سنة)</string>
+    <string name="sync_complete">اكتملت المزامنة (%1$d حدث)</string>
+    <string name="syncing">جارٍ المزامنة…</string>
+
+    <!-- Common -->
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_ok">حسناً</string>
+    <string name="back">رجوع</string>
+
+    <!-- Source labels -->
+    <string name="source_local">محلي</string>
+    <string name="source_google">Google</string>
+    <string name="source_samsung">Samsung</string>
+    <string name="source_outlook">Outlook</string>
+    <string name="source_other">آخر</string>
+
+</resources>

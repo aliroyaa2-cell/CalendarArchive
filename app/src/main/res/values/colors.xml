@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary palette - blue -->
+    <color name="primary">#1976D2</color>
+    <color name="primaryDark">#0D47A1</color>
+    <color name="primaryLight">#64B5F6</color>
+    <color name="onPrimary">#FFFFFF</color>
+
+    <!-- Surface (Dark) -->
+    <color name="surface_dark">#121212</color>
+    <color name="surface_card_dark">#1F1F1F</color>
+    <color name="surface_variant_dark">#2A2A2A</color>
+
+    <!-- Text on dark -->
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#BDBDBD</color>
+    <color name="text_tertiary_dark">#757575</color>
+
+    <!-- Surface (Light) -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_card_light">#F5F5F5</color>
+
+    <!-- Text on light -->
+    <color name="text_primary_light">#1F1F1F</color>
+    <color name="text_secondary_light">#5F6368</color>
+
+    <!-- Accent -->
+    <color name="accent_blue">#64B5F6</color>
+    <color name="accent_green">#81C784</color>
+    <color name="accent_red">#E57373</color>
+
+    <!-- Divider -->
+    <color name="divider_dark">#3D3D3D</color>
+    <color name="divider_light">#E0E0E0</color>
+
+</resources>
