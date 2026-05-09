@@ -27,15 +27,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Calendar time URI handler — appears in "Open with" chooser
-                 when CalendarAlarm (or any app) opens content://com.android.calendar/time/... -->
-            <intent-filter>
+            <!-- Calendar time URI handler -->
+            <intent-filter android:priority="50">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data
-                    android:scheme="content"
-                    android:host="com.android.calendar"
-                    android:pathPrefix="/time" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" android:host="com.android.calendar" />
+            </intent-filter>
+
+            <!-- Calendar event URI handler -->
+            <intent-filter android:priority="50">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content"
+                      android:host="com.android.calendar"
+                      android:pathPrefix="/events" />
             </intent-filter>
 
         </activity>
