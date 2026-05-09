@@ -3,16 +3,15 @@ package com.alaimtiaz.calendararchive
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -57,7 +56,6 @@ class MainActivity : AppCompatActivity() {
 
         updatePermissionUi()
 
-        // Auto sync on first launch if permission granted
         if (hasPermission()) {
             viewModel.refreshAndSync()
         }
@@ -86,16 +84,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSearch() {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.setQuery(query ?: "")
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.setQuery(newText ?: "")
-                return true
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val query = s?.toString() ?: ""
+                viewModel.setQuery(query)
+                binding.btnClearSearch.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
             }
         })
+
+        binding.btnClearSearch.setOnClickListener {
+            binding.etSearch.setText("")
+        }
     }
 
     private fun setupMenu() {
