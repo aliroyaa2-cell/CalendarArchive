@@ -36,8 +36,17 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun renderDisplaySettings() {
-        // Placeholder — toggles will be added in later phases (B, C)
-        addPlaceholder(displayContainer, getString(R.string.settings_empty_display))
+        // Toggle 1: Hide source line
+        addToggle(
+            container = displayContainer,
+            title = "إخفاء المصدر تحت الحدث",
+            description = "يخفي السطر اللي فيه Google · الحساب · البريد تحت كل حدث.\n" +
+                    "العنوان والوقت يبقون ظاهرين.",
+            isChecked = FeatureFlags.isHideSourceEnabled(this),
+            onChange = { enabled ->
+                FeatureFlags.setHideSourceEnabled(this, enabled)
+            }
+        )
     }
 
     private fun renderDataSettings() {
@@ -54,6 +63,82 @@ class SettingsActivity : AppCompatActivity() {
             setPadding(dp(12), dp(24), dp(12), dp(24))
         }
         container.addView(tv)
+    }
+
+    /**
+     * Add a single toggle row to the given container.
+     * Uses plain android.widget.Switch for theme stability.
+     */
+    private fun addToggle(
+        container: LinearLayout,
+        title: String,
+        description: String,
+        isChecked: Boolean,
+        onChange: (Boolean) -> Unit
+    ) {
+        // Container row
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, dp(12))
+            }
+            setPadding(dp(12), dp(14), dp(12), dp(14))
+            setBackgroundColor(0xFF1F1F1F.toInt())
+        }
+
+        // Texts container (left side, takes remaining space)
+        val textsContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        }
+
+        val titleView = TextView(this).apply {
+            text = title
+            textSize = 15f
+            setTextColor(0xFFFFFFFF.toInt())
+        }
+
+        val descView = TextView(this).apply {
+            text = description
+            textSize = 12f
+            setTextColor(0xFFBDBDBD.toInt())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp(4)
+            }
+        }
+
+        textsContainer.addView(titleView)
+        textsContainer.addView(descView)
+
+        // Plain Switch (right side)
+        val switchView = Switch(this).apply {
+            this.isChecked = isChecked
+            setOnCheckedChangeListener { _, checked ->
+                onChange(checked)
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart = dp(12)
+            }
+        }
+
+        row.addView(textsContainer)
+        row.addView(switchView)
+
+        container.addView(row)
     }
 
     private fun dp(value: Int): Int {
