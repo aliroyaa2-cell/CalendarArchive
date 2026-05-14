@@ -6,11 +6,13 @@ import android.graphics.PorterDuff
 import android.net.Uri
 import android.provider.CalendarContract
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.alaimtiaz.calendararchive.FeatureFlags
 import com.alaimtiaz.calendararchive.data.EventEntity
 import com.alaimtiaz.calendararchive.databinding.ItemEventBinding
 import com.alaimtiaz.calendararchive.util.DateUtils
@@ -33,14 +35,22 @@ class EventsAdapter : ListAdapter<EventEntity, EventsAdapter.VH>(DIFF) {
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val ev = getItem(position)
+        val context = holder.b.root.context
         with(holder.b) {
             tvTitle.text = ev.title
             tvTime.text = DateUtils.formatFull(ev.beginMillis, ev.allDay)
-            tvSource.text = DateUtils.formatSourceLabel(
-                ev.accountType,
-                ev.accountName,
-                ev.calendarDisplayName
-            )
+
+            // Hide source line if FeatureFlag is enabled
+            if (FeatureFlags.isHideSourceEnabled(context)) {
+                tvSource.visibility = View.GONE
+            } else {
+                tvSource.visibility = View.VISIBLE
+                tvSource.text = DateUtils.formatSourceLabel(
+                    ev.accountType,
+                    ev.accountName,
+                    ev.calendarDisplayName
+                )
+            }
 
             // Apply calendar color to stripe
             colorStripe.background?.setColorFilter(ev.calendarColor, PorterDuff.Mode.SRC_IN)
