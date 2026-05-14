@@ -52,6 +52,12 @@
             android:label="@string/title_source_calendars"
             android:theme="@style/Theme.CalendarArchive" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_settings"
+            android:theme="@style/Theme.CalendarArchive" />
+
     </application>
 
 </manifest>
