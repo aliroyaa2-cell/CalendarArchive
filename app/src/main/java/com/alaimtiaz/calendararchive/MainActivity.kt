@@ -117,6 +117,10 @@ class MainActivity : AppCompatActivity() {
                             }
                             true
                         }
+                        R.id.action_settings -> {
+                            startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                            true
+                        }
                         else -> false
                     }
                 }
