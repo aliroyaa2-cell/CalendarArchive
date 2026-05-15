@@ -47,6 +47,19 @@ class SettingsActivity : AppCompatActivity() {
                 FeatureFlags.setHideSourceEnabled(this, enabled)
             }
         )
+
+        // Toggle 2: Unified list (single scrollable list with two sections)
+        addToggle(
+            container = displayContainer,
+            title = "قائمة موحدة (بدل التبويبات)",
+            description = "تشيل التبويبات وتعرض كل الأحداث في قائمة واحدة بقسمين:\n" +
+                    "📅 القادمة (أسود) + 🕐 السابقة (رمادي).\n" +
+                    "البحث يشتغل على القسمين دفعة واحدة.",
+            isChecked = FeatureFlags.isUnifiedListEnabled(this),
+            onChange = { enabled ->
+                FeatureFlags.setUnifiedListEnabled(this, enabled)
+            }
+        )
     }
 
     private fun renderDataSettings() {
