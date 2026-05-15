@@ -21,6 +21,7 @@ import com.alaimtiaz.calendararchive.databinding.ActivityMainBinding
 import com.alaimtiaz.calendararchive.ui.EventsAdapter
 import com.alaimtiaz.calendararchive.viewmodel.MainViewModel
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private val adapter = EventsAdapter()
+
+    private var eventsCollectionJob: Job? = null
+    private var currentUnifiedMode: Boolean = false
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -52,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         setupSearch()
         setupMenu()
         setupPermissionBanner()
-        observeViewModel()
+        observeViewModelSecondary()
 
         updatePermissionUi()
 
@@ -64,6 +68,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updatePermissionUi()
+        // Re-evaluate flag on every resume — user may have toggled it in Settings
+        applyUnifiedModeIfChanged()
     }
 
     private fun setupRecycler() {
@@ -135,15 +141,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeViewModel() {
+    /** Subscribes to syncing/syncMessage — these are independent of unified mode */
+    private fun observeViewModelSecondary() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.events.collectLatest { events ->
-                        adapter.submitEvents(events)
-                        updateEmptyState(events.isEmpty())
-                    }
-                }
                 launch {
                     viewModel.syncing.collectLatest { syncing ->
                         binding.syncProgress.visibility = if (syncing) View.VISIBLE else View.GONE
@@ -155,6 +156,43 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
                             viewModel.consumeSyncMessage()
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Apply the unified-mode flag. Called on onCreate (via onResume) and on every
+     * subsequent onResume — so toggling in Settings takes effect immediately.
+     */
+    private fun applyUnifiedModeIfChanged() {
+        val shouldUnified = FeatureFlags.isUnifiedListEnabled(this)
+        // Always rebind on first resume; rebind on changes after that
+        val firstRun = eventsCollectionJob == null
+        if (!firstRun && shouldUnified == currentUnifiedMode) return
+
+        currentUnifiedMode = shouldUnified
+
+        // Show/hide tabs
+        binding.tabLayout.visibility = if (shouldUnified) View.GONE else View.VISIBLE
+
+        // Cancel previous collection if any
+        eventsCollectionJob?.cancel()
+
+        // Start new collection based on mode
+        eventsCollectionJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                if (shouldUnified) {
+                    viewModel.unifiedEvents.collectLatest { items ->
+                        adapter.submitList(items)
+                        val eventCount = items.count { it is EventsAdapter.ListItem.EventItem }
+                        updateEmptyState(eventCount == 0)
+                    }
+                } else {
+                    viewModel.events.collectLatest { events ->
+                        adapter.submitEvents(events)
+                        updateEmptyState(events.isEmpty())
                     }
                 }
             }
