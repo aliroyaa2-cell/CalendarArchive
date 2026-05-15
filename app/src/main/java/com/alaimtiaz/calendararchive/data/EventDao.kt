@@ -49,4 +49,8 @@ interface EventDao {
 
     @Query("SELECT MIN(beginMillis) FROM events")
     suspend fun getEarliestEventTime(): Long?
+
+    /** Get all events at once — used for export */
+    @Query("SELECT * FROM events ORDER BY beginMillis DESC")
+    suspend fun getAllForExport(): List<EventEntity>
 }
