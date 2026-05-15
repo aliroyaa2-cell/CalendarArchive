@@ -28,4 +28,7 @@ class EventsRepository(context: Context) {
     }
 
     suspend fun count(): Int = db.eventDao().count()
+
+    /** Get all events at once — used for export */
+    suspend fun getAllEventsForExport(): List<EventEntity> = db.eventDao().getAllForExport()
 }
