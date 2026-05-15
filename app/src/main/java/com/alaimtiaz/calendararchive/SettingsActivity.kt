@@ -1,13 +1,22 @@
 package com.alaimtiaz.calendararchive
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Settings Screen
@@ -19,6 +28,20 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var displayContainer: LinearLayout
     private lateinit var dataContainer: LinearLayout
+
+    /**
+     * SAF picker for choosing where to save the JSON export.
+     * User picks file location + name; we receive the URI to write to.
+     */
+    private val createDocumentLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            performExport(uri)
+        } else {
+            Toast.makeText(this, "تم إلغاء التصدير", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,19 +86,90 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun renderDataSettings() {
-        // Placeholder — export button will be added in phase D
-        addPlaceholder(dataContainer, getString(R.string.settings_empty_data))
+        addExportButton(dataContainer)
     }
 
-    private fun addPlaceholder(container: LinearLayout, text: String) {
-        val tv = TextView(this).apply {
-            this.text = text
-            textSize = 13f
-            setTextColor(0xFF757575.toInt())
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(24), dp(12), dp(24))
+    private fun addExportButton(container: LinearLayout) {
+        // Row container
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, dp(12))
+            }
+            setPadding(dp(12), dp(14), dp(12), dp(14))
+            setBackgroundColor(0xFF1F1F1F.toInt())
         }
-        container.addView(tv)
+
+        // Title
+        val titleView = TextView(this).apply {
+            text = "تصدير الأرشيف"
+            textSize = 15f
+            setTextColor(0xFFFFFFFF.toInt())
+        }
+
+        // Description
+        val descView = TextView(this).apply {
+            text = "احفظ نسخة من كل أحداث الأرشيف (قادمة + سابقة) كملف JSON.\n" +
+                    "تختار اسم الملف ومكان الحفظ في الخطوة التالية."
+            textSize = 12f
+            setTextColor(0xFFBDBDBD.toInt())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp(4)
+                bottomMargin = dp(10)
+            }
+        }
+
+        // Export button
+        val exportBtn = Button(this).apply {
+            text = "اختر مكان الحفظ"
+            textSize = 14f
+            setOnClickListener {
+                launchExportPicker()
+            }
+        }
+
+        row.addView(titleView)
+        row.addView(descView)
+        row.addView(exportBtn)
+        container.addView(row)
+    }
+
+    private fun launchExportPicker() {
+        try {
+            createDocumentLauncher.launch(ExportManager.suggestedFilename())
+        } catch (e: Exception) {
+            Toast.makeText(this, "تعذر فتح متصفح الملفات: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun performExport(uri: Uri) {
+        Toast.makeText(this, "جارٍ التصدير…", Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val count = withContext(Dispatchers.IO) {
+                ExportManager.exportToUri(this@SettingsActivity, uri)
+            }
+
+            if (count >= 0) {
+                Toast.makeText(
+                    this@SettingsActivity,
+                    "تم تصدير $count حدث بنجاح ✓",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    this@SettingsActivity,
+                    "فشل التصدير — حاول مرة ثانية",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
     /**
