@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.events.collectLatest { events ->
-                        adapter.submitList(events)
+                        adapter.submitEvents(events)
                         updateEmptyState(events.isEmpty())
                     }
                 }
